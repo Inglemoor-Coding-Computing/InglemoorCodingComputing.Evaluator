@@ -9,6 +9,8 @@
 	
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
 	<ItemGroup>
