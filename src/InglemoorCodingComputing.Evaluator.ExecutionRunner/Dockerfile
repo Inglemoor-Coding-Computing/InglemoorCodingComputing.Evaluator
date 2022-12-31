@@ -7,10 +7,11 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["InglemoorCodingComputing.Evaluator.ExecutionRunner/InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj", "InglemoorCodingComputing.Evaluator.ExecutionRunner/"]
-RUN dotnet restore "InglemoorCodingComputing.Evaluator.ExecutionRunner/InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj"
+COPY ["src/InglemoorCodingComputing.Evaluator.ExecutionRunner/InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj", "src/InglemoorCodingComputing.Evaluator.ExecutionRunner/"]
+COPY ["src/InglemoorCodingComputing.Evaluator.Shared/InglemoorCodingComputing.Evaluator.Shared.csproj", "src/InglemoorCodingComputing.Evaluator.Shared/"]
+RUN dotnet restore "src/InglemoorCodingComputing.Evaluator.ExecutionRunner/InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj"
 COPY . .
-WORKDIR "/src/InglemoorCodingComputing.Evaluator.ExecutionRunner"
+WORKDIR "/src/src/InglemoorCodingComputing.Evaluator.ExecutionRunner"
 RUN dotnet build "InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj" -c Release -o /app/build
 
 FROM build AS publish
