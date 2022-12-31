@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B5BBD1F2-3349-447B-8CA5-BB936D60D4F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C8B360EF-501F-410D-96F8-F6341C0E5D81}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InglemoorCodingComputing.Evaluator", "src\InglemoorCodingComputing.Evaluator\InglemoorCodingComputing.Evaluator.csproj", "{2485682B-7CCB-476F-84AC-4AC8C2BCF36D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InglemoorCodingComputing.Evaluator.ExecutionRunner", "src\InglemoorCodingComputing.Evaluator.ExecutionRunner\InglemoorCodingComputing.Evaluator.ExecutionRunner.csproj", "{D02B22E2-8A3C-4869-9169-16672F9961BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InglemoorCodingComputing.Evaluator.Shared", "src\InglemoorCodingComputing.Evaluator.Shared\InglemoorCodingComputing.Evaluator.Shared.csproj", "{EFB65028-32A0-4124-ADB3-526495E8B39A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InglemoorCodingComputing.Evaluator.UnitTests", "tests\InglemoorCodingComputing.Evaluator.Tests\InglemoorCodingComputing.Evaluator.UnitTests.csproj", "{EAC0444A-180E-4953-B3C4-D27DDB044728}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2485682B-7CCB-476F-84AC-4AC8C2BCF36D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2485682B-7CCB-476F-84AC-4AC8C2BCF36D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2485682B-7CCB-476F-84AC-4AC8C2BCF36D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2485682B-7CCB-476F-84AC-4AC8C2BCF36D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02B22E2-8A3C-4869-9169-16672F9961BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02B22E2-8A3C-4869-9169-16672F9961BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02B22E2-8A3C-4869-9169-16672F9961BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02B22E2-8A3C-4869-9169-16672F9961BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB65028-32A0-4124-ADB3-526495E8B39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB65028-32A0-4124-ADB3-526495E8B39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB65028-32A0-4124-ADB3-526495E8B39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB65028-32A0-4124-ADB3-526495E8B39A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC0444A-180E-4953-B3C4-D27DDB044728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC0444A-180E-4953-B3C4-D27DDB044728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC0444A-180E-4953-B3C4-D27DDB044728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC0444A-180E-4953-B3C4-D27DDB044728}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2485682B-7CCB-476F-84AC-4AC8C2BCF36D} = {B5BBD1F2-3349-447B-8CA5-BB936D60D4F7}
+		{D02B22E2-8A3C-4869-9169-16672F9961BD} = {B5BBD1F2-3349-447B-8CA5-BB936D60D4F7}
+		{EFB65028-32A0-4124-ADB3-526495E8B39A} = {B5BBD1F2-3349-447B-8CA5-BB936D60D4F7}
+		{EAC0444A-180E-4953-B3C4-D27DDB044728} = {C8B360EF-501F-410D-96F8-F6341C0E5D81}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B612787F-C7B8-4343-956E-F50906F53B87}
+	EndGlobalSection
+EndGlobal

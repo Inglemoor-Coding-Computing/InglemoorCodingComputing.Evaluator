@@ -1,0 +1,133 @@
+@page "/admin"
+@layout AdminLayout
+@inject AuthenticationStateService AuthenticationStateService
+@inject AdminService AdminService
+@inject IJSRuntime JSRuntime
+<PageTitle>Admin</PageTitle>
+
+<div class="px-3 pt-5 flex flex-col">
+    @if (authed)
+    {
+        <div class="flex flex-col items-center">
+            <h3 class="text-3xl font-semibold">API Users</h3>
+            <button class="italic hover:underline" @onclick=Load>refresh</button>
+            <div class="space-y-2">
+                @foreach (var user in users)
+                {
+                    <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-2 w-96">
+                        <div>@user.Name</div>
+                        <div class="font-mono">@user.Id</div>
+                        <div class="flex space-x-4 py-1 justify-around">
+                            <button @onclick="() => CopyKeyAsync(user)"
+                        class="text-sm px-2 py-1 rounded-2xl border-2 w-32 border-amber-500 hover:bg-amber-500 font-semibold transition-colors">
+                                @(recentCopied == user.Id ? "Copied" : "Copy API Key")
+                            </button>
+                            <button @onclick="() => DeleteAsync(user)"
+                        class="text-sm px-2 py-1 rounded-2xl border-2 border-rose-500 hover:bg-rose-500 font-semibold transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-2 w-96 flex flex-col items-center">
+                    <div class="flex">
+                        <label for="name">Name:</label>
+                        <input id="name" @bind=newName
+                        class="mx-4 focus:outline-none bg-gray-100 sm:text-sm rounded-xl focus:ring-indigo-500 block w-full px-2 py-1 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
+                    </div>
+                    <button class="bg-teal-500 font-semibold px-2 rounded-lg mt-2" @onclick=CreateAsync>Create</button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* Login *@
+        <div class="flex flex-col items-center space-y-2">
+            <h3 class="text-xl">Login</h3>
+            <div class="flex space-x-1">
+                <label for="password">Password:</label>
+                <input id="password" @bind=password type="password"
+                class="focus:outline-none bg-gray-100 sm:text-sm rounded-xl focus:ring-indigo-500 block w-full px-2 py-1 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
+            </div>
+            <button class="text-white bg-indigo-400 px-3 py-1 rounded-xl" @onclick=Authenticate>Login</button>
+            <div class="text-rose-500">
+                @error
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ApiUser> users = new();
+    private bool authed;
+    private string password = string.Empty;
+    private string? error;
+    private Guid? recentCopied;
+    private async Task CopyKeyAsync(ApiUser user)
+    {
+        var token = await AdminService.GenerateApiTokenAsync(user.Id, null);
+        if (token is not null)
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", token.Token);
+            recentCopied = user.Id;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(2000);
+            recentCopied = null;
+        }
+    }
+
+    private async Task DeleteAsync(ApiUser user)
+    {
+        var expected = user.Name;
+        if (!(await JSRuntime.InvokeAsync<string>("prompt", $"Enter \"{expected}\" to delete.") == expected))
+            return;
+        await AdminService.DeleteUserAsync(user.Id);
+        Load();        
+    }
+
+    private void Load()
+    {
+        users.Clear();
+        users.AddRange(AdminService.GetUsers());
+    }
+
+    private async Task CreateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+            return;
+        await AdminService.CreateUserAsync(new(newName));
+        Load();
+    }
+
+    private string newName = string.Empty;
+
+    private void Authenticate()
+    {
+        error = null;
+        if (!AuthenticationStateService.Authenticate(password))
+            error = "Failed to authenticate";
+        else
+            Load();
+        password = string.Empty;
+        CheckAuthentication();
+    }
+
+    private void CheckAuthentication()
+    {
+        authed = AuthenticationStateService.Authenticated;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            CheckAuthentication();
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(10));
+            while (await timer.WaitForNextTickAsync())
+                await InvokeAsync(CheckAuthentication);
+        }
+    }
+}

@@ -1,0 +1,66 @@
+@page "/"
+<PageTitle>IHS-CCC Evaluator</PageTitle>
+
+<div class="pt-5">
+    <h2 class="text-lg font-semibold">API Documentation:</h2>
+    <div class="pl-2 py-1">
+        <span class="font-bold">POST</span>: /evaluation/result
+        <div class="pl-6">
+            <pre><code>Request Body 
+  {
+    "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "language": "string",
+    "content": "string",
+    "standardInput": "string"
+  }
+
+Responses:
+  200 Success:
+  {
+    "code": 0,
+    "output": "string"
+  }
+  400 Bad Request: User already has an execution in progress.
+  401 Unauthorized
+  401 Forbidden
+
+            </code></pre>
+        </div>
+    </div>
+    <div class="pl-2 py-1">
+        <span class="font-bold">POST</span>: /evaluation/verify
+        <div class="pl-6">
+            <pre><code>Request Body 
+  {
+    "user": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "language": "string",
+    "code": "string",
+    "inputs": [
+      "string"
+    ],
+    "outputs": [
+      "string"
+    ]
+  }
+
+Responses:
+  200 Success:
+  {
+    "statusCodes": [
+      0
+    ],
+    "results": [
+      true
+    ],
+    "outputs": [
+      "string"
+    ]
+  }
+  400 Bad Request: User already has an execution in progress.
+  401 Unauthorized
+  401 Forbidden
+
+            </code></pre>
+        </div>
+    </div>
+</div>

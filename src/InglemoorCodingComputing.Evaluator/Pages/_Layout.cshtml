@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@namespace InglemoorCodingComputing.Evaluator.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en" style="margin-left: calc(100vw - 100%);">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="~/" />
+    <link rel="stylesheet" href="tailwind.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+
+<body class="bg-white dark:bg-black text-black dark:text-white sm:pl-4">
+    @RenderBody()
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+    </div>
+    <script src="_framework/blazor.server.js"></script>
+</body>
+
+</html>

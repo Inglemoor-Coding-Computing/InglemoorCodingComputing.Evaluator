@@ -1,0 +1,6 @@
+@import url("https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/cascadia-code.min.css");
+@import url("https://fonts.googleapis.com/css?family=Inconsolata:normal,semibold,bold,extrabold");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
