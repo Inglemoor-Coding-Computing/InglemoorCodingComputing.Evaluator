@@ -13,7 +13,7 @@ RUN dotnet restore "src/InglemoorCodingComputing.Evaluator/InglemoorCodingComput
 COPY . .
 WORKDIR "/src/src/InglemoorCodingComputing.Evaluator"
 RUN curl https://github.com/tailwindlabs/tailwindcss/releases/download/v3.2.4/tailwindcss-linux-x64 -o /tailwindcss
-RUN sh /tailwindcss -i .\Styles\app.css -o .\wwwroot\tailwind.css --watch
+RUN sh /tailwindcss -i Styles/app.css -o wwwroot/tailwind.css --watch
 RUN dotnet build "InglemoorCodingComputing.Evaluator.csproj" -c Release -o /app/build
 
 FROM build AS publish
