@@ -7,7 +7,7 @@ services:
       - 1313:80
     restart: always
     volumes:
-      - ./data/ihs-ccc-eval:/InglemoorCodingComputing.Evaluator
+      - ihs-ccc-eval:/InglemoorCodingComputing.Evaluator/
     environment:
       - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
       - JWT__Secret=${JWT_Secret}
@@ -41,3 +41,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 60
     restart: always
+volumes:
+  ihs-ccc-eval:

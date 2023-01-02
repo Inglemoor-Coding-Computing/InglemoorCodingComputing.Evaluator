@@ -9,7 +9,7 @@ services:
       - 1313:80
     restart: always
     volumes:
-      - ./data/ihs-ccc-eval:/InglemoorCodingComputing.Evaluator
+      - ihs-ccc-eval:/InglemoorCodingComputing.Evaluator
     environment:
       - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
       - JWT__Secret=${JWT_Secret}
@@ -38,3 +38,6 @@ services:
     tmpfs:
       - /piston/jobs:exec,uid=1000,gid=1000,mode=711
       - /tmp:exec
+
+volumes:
+  ihs-ccc-eval:
