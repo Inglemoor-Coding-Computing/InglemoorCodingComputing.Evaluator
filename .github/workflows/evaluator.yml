@@ -1,4 +1,4 @@
-name: Execution Runner Docker
+name: Evaluator Docker
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -46,7 +46,7 @@ jobs:
           npm install -D tailwindcss
 
       - name: Tailwindcss
-        run: npx tailwindcss -c ./src/InglemoorCodingComputing.Evaluator/tailwind.config.js" -i ./src/InglemoorCodingComputing.Evaluator/Styles/app.css" -o ./src/InglemoorCodingComputing.Evaluator/wwwroot/tailwind.css" --minify
+        run: npx tailwindcss -c "./src/InglemoorCodingComputing.Evaluator/tailwind.config.js" -i "./src/InglemoorCodingComputing.Evaluator/Styles/app.css" -o "./src/InglemoorCodingComputing.Evaluator/wwwroot/tailwind.css" --minify
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
