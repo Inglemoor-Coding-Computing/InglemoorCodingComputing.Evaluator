@@ -6,6 +6,7 @@ using System.Text;
 using System.Security.Claims;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,9 +61,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnTokenValidated = async ctx =>
             {
-                // Admin tokens don't have ids.
-                if (ctx.Principal?.FindFirstValue("nameid") is not string id)
+                var id = ctx.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (id is null)
+                {
+                    ctx.Fail("Unknown user.");
                     return;
+                }
 
                 if (!Guid.TryParse(id, out var guid))
                 {
@@ -93,12 +97,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapRazorPages();

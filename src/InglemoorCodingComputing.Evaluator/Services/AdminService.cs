@@ -62,7 +62,7 @@ public class AdminService
     /// <param name="days"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public async Task<LoginResponse?> GenerateApiTokenAsync(Guid id, int? days)
+    public async Task<LoginResponse?> GenerateApiTokenAsync(Guid id, int days = 365)
     {
         // Make sure the user actually exists.
         var user = await _apiUserDbContext.FindAsync<ApiUser>(id);
@@ -72,13 +72,13 @@ public class AdminService
         List<Claim> claims = new()
         {
             // Id is checked agains the database to ensure the user still exists.
-            new Claim("nameid", id.ToString()),
+            new Claim(JwtRegisteredClaimNames.NameId, id.ToString()),
         };
 
         // Generate JWT.
         SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? throw new Exception("Set the JWT Secret.")));
         SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512Signature);
-        JwtSecurityToken token = new(claims: claims, expires: days is null ? null : DateTime.UtcNow.AddDays(days.Value), signingCredentials: creds);
+        JwtSecurityToken token = new(claims: claims, expires: DateTime.UtcNow.AddDays(days), signingCredentials: creds);
         return new(new JwtSecurityTokenHandler().WriteToken(token));
     }
 

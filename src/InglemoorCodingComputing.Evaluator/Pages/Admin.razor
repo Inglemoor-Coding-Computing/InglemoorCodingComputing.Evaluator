@@ -5,7 +5,7 @@
 @inject IJSRuntime JSRuntime
 <PageTitle>Admin</PageTitle>
 
-<div class="px-3 pt-5 flex flex-col">
+<div class="flex flex-col px-3 pt-5">
     @if (authed)
     {
         <div class="flex flex-col items-center">
@@ -14,29 +14,29 @@
             <div class="space-y-2">
                 @foreach (var user in users)
                 {
-                    <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-2 w-96">
+                    <div class="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl w-96">
                         <div>@user.Name</div>
                         <div class="font-mono">@user.Id</div>
-                        <div class="flex space-x-4 py-1 justify-around">
+                        <div class="flex justify-around py-1 space-x-4">
                             <button @onclick="() => CopyKeyAsync(user)"
-                        class="text-sm px-2 py-1 rounded-2xl border-2 w-32 border-amber-500 hover:bg-amber-500 font-semibold transition-colors">
+                        class="w-32 px-2 py-1 text-sm font-semibold transition-colors border-2 rounded-2xl border-amber-500 hover:bg-amber-500">
                                 @(recentCopied == user.Id ? "Copied" : "Copy API Key")
                             </button>
                             <button @onclick="() => DeleteAsync(user)"
-                        class="text-sm px-2 py-1 rounded-2xl border-2 border-rose-500 hover:bg-rose-500 font-semibold transition-colors">
+                        class="px-2 py-1 text-sm font-semibold transition-colors border-2 rounded-2xl border-rose-500 hover:bg-rose-500">
                                 Delete
                             </button>
                         </div>
                     </div>
                 }
 
-                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-2 w-96 flex flex-col items-center">
+                <div class="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-900 rounded-xl w-96">
                     <div class="flex">
                         <label for="name">Name:</label>
                         <input id="name" @bind=newName
-                        class="mx-4 focus:outline-none bg-gray-100 sm:text-sm rounded-xl focus:ring-indigo-500 block w-full px-2 py-1 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
+                        class="block w-full px-2 py-1 mx-4 bg-gray-100 focus:outline-none sm:text-sm rounded-xl focus:ring-indigo-500 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
                     </div>
-                    <button class="bg-teal-500 font-semibold px-2 rounded-lg mt-2" @onclick=CreateAsync>Create</button>
+                    <button class="px-2 mt-2 font-semibold bg-teal-500 rounded-lg" @onclick=CreateAsync>Create</button>
                 </div>
             </div>
         </div>
@@ -49,9 +49,9 @@
             <div class="flex space-x-1">
                 <label for="password">Password:</label>
                 <input id="password" @bind=password type="password"
-                class="focus:outline-none bg-gray-100 sm:text-sm rounded-xl focus:ring-indigo-500 block w-full px-2 py-1 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
+                class="block w-full px-2 py-1 bg-gray-100 focus:outline-none sm:text-sm rounded-xl focus:ring-indigo-500 dark:bg-gray-800 dark:placeholder-gray-400 dark:text-white" />
             </div>
-            <button class="text-white bg-indigo-400 px-3 py-1 rounded-xl" @onclick=Authenticate>Login</button>
+            <button class="px-3 py-1 text-white bg-indigo-400 rounded-xl" @onclick=Authenticate>Login</button>
             <div class="text-rose-500">
                 @error
             </div>
@@ -67,7 +67,7 @@
     private Guid? recentCopied;
     private async Task CopyKeyAsync(ApiUser user)
     {
-        var token = await AdminService.GenerateApiTokenAsync(user.Id, null);
+        var token = await AdminService.GenerateApiTokenAsync(user.Id);
         if (token is not null)
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", token.Token);
