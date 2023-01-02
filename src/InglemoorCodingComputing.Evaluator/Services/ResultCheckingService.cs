@@ -10,7 +10,7 @@ public class ResultCheckingService : IResultCheckingService
             return string.Empty;
 
         var start = 0;
-        for (;start < lines.Length; start++)
+        for (; start < lines.Length; start++)
         {
             if (!string.IsNullOrEmpty(lines[start]))
                 break;

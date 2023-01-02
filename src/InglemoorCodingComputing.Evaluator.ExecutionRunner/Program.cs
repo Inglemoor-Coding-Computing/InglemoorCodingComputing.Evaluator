@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/execute", async ([FromBody]CodeExecutionRequest request, [FromServices]HttpClient httpClient, [FromQuery(Name = "key")] string? key, IConfiguration config) =>
+app.MapPost("/execute", async ([FromBody] CodeExecutionRequest request, [FromServices] HttpClient httpClient, [FromQuery(Name = "key")] string? key, IConfiguration config) =>
 {
     if (key != config["Key"]) return Results.Unauthorized();
     // Start timings.
@@ -35,21 +35,21 @@ app.MapPost("/execute", async ([FromBody]CodeExecutionRequest request, [FromServ
         return Results.BadRequest("Invalid language selection.");
 
     // Call piston instance
-    var res = await httpClient.PostAsJsonAsync(app.Configuration["Endpoint"], new PistonRequest()
+    var res = await httpClient.PostAsJsonAsync(app.Configuration["Endpoint"] + "/api/v2/execute", new PistonRequest()
     {
         Language = r.Value.Item1,
         Version = r.Value.Item2,
         Files = new[]
         {
             new PistonRequest.File()
-            { 
+            {
                 Content = request.Content
             }
         },
         Stdin = request.StandardIn
     });
     res.EnsureSuccessStatusCode();
-    
+
     var options = new JsonSerializerOptions
     {
         PropertyNameCaseInsensitive = true
@@ -60,8 +60,8 @@ app.MapPost("/execute", async ([FromBody]CodeExecutionRequest request, [FromServ
     var end = DateTime.UtcNow;
 
     // Return result
-    return Results.Ok(new CodeExecutionResult() 
-    { 
+    return Results.Ok(new CodeExecutionResult()
+    {
         Id = request.Id,
         Instance = Instance.GetCurrent(),
         Code = response.Run.Code,
@@ -90,7 +90,7 @@ static (string, string)? DecodeLanguage(string x) => x.ToLowerInvariant() switch
 internal static class Instance
 {
     private static Guid? instance;
-    
+
     /// <summary>
     /// Unique Identifier for an instance.
     /// </summary>
@@ -103,13 +103,13 @@ internal static class Instance
         if (!Directory.Exists(dir))
             Directory.CreateDirectory(dir);
         var path = Path.Combine(dir, "instance");
-    
+
         if (File.Exists(path))
         {
             instance = Guid.Parse(File.ReadAllText(path));
             return instance.Value;
         }
-     
+
         instance = Guid.NewGuid();
         File.WriteAllText(path, instance.Value.ToString());
         return instance.Value;

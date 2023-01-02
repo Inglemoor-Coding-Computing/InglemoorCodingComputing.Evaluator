@@ -1,30 +1,26 @@
 version: "3.9"
 services:
   evaluator-dev:
-    build: 
-      context: .
-      dockerfile: ./src/InglemoorCodingComputing.Evaluator/Dockerfile
-    container_name: ihs-ccc-eval-dev
+    image: ghcr.io/inglemoor-coding-computing/ihs-ccc-evaluator:main
+    container_name: ihs-ccc-eval
     ports:
       - 1313:80
     restart: always
     volumes:
-      - ./data/ihs-ccc-eval:/app/ihs-ccc-eval
+      - ./data/ihs-ccc-eval:/InglemoorCodingComputing.Evaluator
     environment:
-      - ExecutionEndpoint="http://exec-runner:1989/execute?key=1234"
+      - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
       - JWT__Secret=${JWT_Secret}
       - Admin__Password=${Admin_Password}
 
   exec-runner:
-    build: 
-      context: .
-      dockerfile: ./src/InglemoorCodingComputing.Evaluator.ExecutionRunner/Dockerfile
-    container_name: ihs-ccc-eval-exec-runner-dev
+    image: ghcr.io/inglemoor-coding-computing/ihs-ccc-evaluator-runner:main
+    container_name: ihs-ccc-eval-exec-runner
     restart: always
     ports:
       - 1989:80
     environment:
-      - Endpoint="http://piston:2000/api/v2/execute"
+      - Endpoint=http://piston:2000
       - Key=1234
 
   piston:
@@ -38,3 +34,10 @@ services:
     tmpfs:
       - /piston/jobs:exec,uid=1000,gid=1000,mode=711
       - /tmp:exec
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60
+    restart: always

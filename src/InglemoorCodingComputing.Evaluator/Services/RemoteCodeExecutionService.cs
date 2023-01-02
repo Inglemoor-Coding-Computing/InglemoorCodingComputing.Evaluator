@@ -1,7 +1,6 @@
 ﻿namespace InglemoorCodingComputing.Evaluator.Services;
 
 using System.Text.Json;
-using System.Net.Http.Headers;
 
 /// <summary>
 /// Executes code on a remote worker
@@ -22,7 +21,7 @@ public sealed class RemoteCodeExecutionService : IAsyncCodeExecutionService
     {
         PropertyNameCaseInsensitive = true
     };
-    
+
     /// <inheritdoc/>
     public async Task<CodeExecutionResult> ExecuteAsync(CodeExecutionRequest request)
     {
