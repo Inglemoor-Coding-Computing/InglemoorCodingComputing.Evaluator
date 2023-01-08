@@ -1,0 +1,173 @@
+@inject IRunnerService RunnerService
+@inject ISpecService SpecService
+@implements IDisposable
+@using System.Collections.Concurrent
+
+@if (runners is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="flex flex-col items-center">
+        <h3 class="py-4 text-3xl font-semibold">Execution Runners</h3>
+
+        <h4 class="py-4 text-2xl font-semibold">Specification</h4>
+        <div class="flex flex-col items-center py-3 space-y-2">
+            @for (var i = 0; i < specNames.Count; i++)
+            {
+                var i2 = i;
+                <div class="flex p-2 space-x-2 bg-gray-100 dark:bg-gray-800 rounded-xl w-96">
+                    <input @bind=specNames[i2] @bind:after=UpdateSpec @bind:event="oninput"
+                class="px-1 font-mono bg-gray-200 rounded-md w-52 focus:outline-none dark:bg-gray-700"
+                placeholder="package">
+                    <input @bind=specVersions[i2] @bind:after=UpdateSpec @bind:event="oninput"
+                class="w-32 px-1 font-mono bg-gray-200 rounded-md focus:outline-none dark:bg-gray-700"
+                placeholder="version">
+                    <button @onclick="() => Delete(i2)"
+                class="transition ease-in-out delay-150 hover:text-red-500 hover:-translate-y-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path
+                        d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                        </svg>
+                    </button>
+                </div>
+            }
+            <button @onclick=NewLanguage class="px-2 font-semibold bg-teal-500 rounded-lg w-fit">Add Language</button>
+        </div>
+
+        <div class="space-y-4">
+            @foreach (var runner in runners)
+            {
+                <div class="flex flex-col p-2 space-y-2 bg-gray-100 dark:bg-gray-800 rounded-xl w-96">
+                    <div class="text-lg font-semibold">@runner.Name</div>
+                    <input type="text" value=@runner.Endpoint
+                @oninput="@(e => RunnerService.UpdateOrAddAsync(runner with {Endpoint = e.Value?.ToString() ?? string.Empty}))"
+                class="w-64 px-1 font-mono bg-gray-200 rounded-md focus:outline-none dark:bg-gray-700"
+                placeholder="endpoint">
+                    <input type="text" value=@runner.Key
+                @oninput="@(e => RunnerService.UpdateOrAddAsync(runner with {Key = e.Value?.ToString() ?? string.Empty}))"
+                class="w-64 px-1 font-mono bg-gray-200 rounded-md focus:outline-none dark:bg-gray-700"
+                placeholder="key">
+                    <div class="flex space-x-1">
+                        <label for="enabled">Enabled:</label>
+                        <input @oninput="@(() => RunnerService.UpdateOrAddAsync(runner with {Enabled = !runner.Enabled}))"
+                    id="enabled" type="checkbox" value=@runner.Enabled>
+                    </div>
+                    <div class="bg-gray-200 dark:bg-gray-700">@runner.Spec</div>
+                    <div class="flex justify-between space-x-2">
+                        @if (specInProgress.Contains(runner.Id))
+                        {
+                                        <svg class="w-4 h-4 m-2 text-amber-500 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+                        }
+                        else if (runner.Spec.Split("\n").SequenceEqual(SpecService.Spec.Select(x => $"{x.Item1}={x.Item2}")))
+                        {
+                            <div class="font-semibold text-emerald-500">Meets Specification</div>
+                        }
+                        else
+                        {
+                            <button class="px-2 font-semibold rounded-md w-fit bg-amber-500"
+                    @onclick="() => ApplySpecAsync(runner)">Apply
+                                Specification</button>
+                        }
+                        <button @onclick="() => PingAsync(runner)" class="h-6 px-2 font-semibold rounded-md w-fit bg-emerald-500">
+                            Ping
+                        </button>
+                    </div>
+                    @if (messages.TryGetValue(runner.Id, out var message))
+                    {
+                        <div class="flex flex-col space-y-1">
+                            @foreach (var line in message.Split('\n'))
+                            {
+                                <div>@line</div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    IReadOnlyList<Runner>? runners;
+    ConcurrentDictionary<Guid, string> messages = new();
+    HashSet<Guid> specInProgress = new();
+    List<string> specNames = new();
+    List<string> specVersions = new();
+
+    private async Task ApplySpecAsync(Runner runner)
+    {
+        messages.Remove(runner.Id, out var _);
+        specInProgress.Add(runner.Id);
+        var res = await RunnerService.SpecAsync(runner, SpecService.Spec);
+        messages[runner.Id] = res;
+        await RunnerService.PingAsync(runner);
+        specInProgress.Remove(runner.Id);
+    }
+
+    private async Task PingAsync(Runner runner)
+    {
+        messages.Remove(runner.Id, out var _);
+        var res = await RunnerService.PingAsync(runner);
+        if (res is null)
+            messages[runner.Id] = "Failed to ping";
+    }
+
+    private void Delete(int i)
+    {
+        specNames.RemoveAt(i);
+        specVersions.RemoveAt(i);
+        UpdateSpec();
+    }
+
+    private void NewLanguage()
+    {
+        specNames.Add(string.Empty);
+        specVersions.Add(string.Empty);
+        StateHasChanged();
+    }
+
+    private void UpdateSpec()
+    {
+        List<(string, string)> newSpec = new();
+        for (var i = 0; i < specNames.Count; i++)
+            newSpec.Add((specNames[i], specVersions[i]));
+        SpecService.Spec = newSpec;
+    }
+
+    private void OnUpdated()
+    {
+        runners = RunnerService.Runners();
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            specNames.AddRange(SpecService.Spec.Select(x => x.Item1));
+            specVersions.AddRange(SpecService.Spec.Select(x => x.Item2));
+            runners = RunnerService.Runners();
+            RunnerService.Updated += OnUpdated;
+            await InvokeAsync(StateHasChanged);
+            foreach (var runner in runners)
+            {
+                if (string.IsNullOrEmpty(runner.Spec))
+                {
+                    var res = await RunnerService.PingAsync(runner);
+                    if (res is null)
+                        messages[runner.Id] = "Failed to ping";
+                }
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        RunnerService.Updated -= OnUpdated;
+    }
+}

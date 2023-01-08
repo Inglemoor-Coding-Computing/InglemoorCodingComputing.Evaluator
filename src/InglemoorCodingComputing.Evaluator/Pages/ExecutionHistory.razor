@@ -1,6 +1,4 @@
-@inject AuthenticationStateService AuthenticationStateService
 @inject IExecutionLoggingService ExecutionLoggingService
-@inject NavigationManager NavigationManager
 @using System.Threading
 @if (results is null)
 {
@@ -14,7 +12,7 @@ else
         <div class="space-y-4">
             @foreach (var result in results)
             {
-                <div class="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl w-96">
+                <div class="w-[500px] p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
                     <div>@result.Time
                         @if (result.Errored)
                         {

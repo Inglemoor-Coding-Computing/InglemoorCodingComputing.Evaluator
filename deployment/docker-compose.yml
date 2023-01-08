@@ -9,7 +9,7 @@ services:
     volumes:
       - ./data/ihs-ccc-eval:/data
     environment:
-      - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
+      - ExecutionEndpoint=http://exec-runner:80,1234
       - JWT__Secret=${JWT_Secret}
       - Admin__Password=${Admin_Password}
       - XDG_DATA_HOME=/data
@@ -35,6 +35,10 @@ services:
     tmpfs:
       - /piston/jobs:exec,uid=1000,gid=1000,mode=711
       - /tmp:exec
+    environment:
+      - PISTON_MAX_CONCURRENT_JOBS=32
+      - PISTON_MAX_PROCESS_COUNT=8
+      - PISTON_MAX_FILE_SIZE=1000000
 
   watchtower:
     image: containrrr/watchtower

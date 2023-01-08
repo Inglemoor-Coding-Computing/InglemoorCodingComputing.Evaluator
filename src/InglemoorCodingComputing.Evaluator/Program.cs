@@ -18,11 +18,14 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IAsyncCodeExecutionService, RemoteCodeExecutionService>();
 builder.Services.AddSingleton<IUserLimitService, UserLimitService>();
 builder.Services.AddSingleton<IResultCheckingService, ResultCheckingService>();
+builder.Services.AddSingleton<IRunnerService, RunnerService>();
+builder.Services.AddSingleton<ISpecService, SpecService>();
 builder.Services.AddScoped<IExecutionLoggingService, ExecutionLoggingService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<AuthenticationStateService>();
 builder.Services.AddDbContext<ApiUserDbContext>();
 builder.Services.AddDbContext<ExecutionResultDbContext>();
+builder.Services.AddDbContext<RunnerDbContext>();
 builder.Services.AddHttpClient<IAsyncCodeExecutionService, RemoteCodeExecutionService>();
 
 
@@ -102,6 +105,30 @@ using (var serviceScope = app.Services.CreateScope())
 {
     serviceScope.ServiceProvider.GetRequiredService<ApiUserDbContext>().Database.Migrate();
     serviceScope.ServiceProvider.GetRequiredService<ExecutionResultDbContext>().Database.Migrate();
+    var runnerDbCtx = serviceScope.ServiceProvider.GetRequiredService<RunnerDbContext>();
+
+    runnerDbCtx.Database.Migrate();
+    if (app.Configuration["ExecutionEndpoint"] is string defaultEndpoint)
+    {
+        var tokens = defaultEndpoint.Split(',');
+        var endpoint = tokens[0];
+        var key = tokens[1];
+        var existing = runnerDbCtx.Runners.AsNoTracking().FirstOrDefault(x => x.Endpoint == endpoint);
+        if (existing is null)
+        {
+            runnerDbCtx.Runners.Add(new()
+            {
+                Enabled = true,
+                FromConfig = true,
+                Id = Guid.NewGuid(),
+                Name = "Default",
+                Spec = "",
+                Endpoint = endpoint,
+                Key = key
+            });
+            runnerDbCtx.SaveChanges();
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.

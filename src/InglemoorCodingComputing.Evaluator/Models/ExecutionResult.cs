@@ -3,7 +3,7 @@ namespace InglemoorCodingComputing.Evaluator.Models;
 /// <summary>
 /// Log of an execution
 /// </summary>
-public record ExecutionResult
+public sealed record ExecutionResult
 {
     /// <summary>
     /// Execution Id.

@@ -3,24 +3,24 @@ namespace InglemoorCodingComputing.Evaluator.Models;
 using Microsoft.EntityFrameworkCore;
 
 /// <summary>
-/// EFCore DbContext for storing Execution Results.
+/// EFCore DbContext for storing runner endpoints.
 /// </summary>
-public sealed class ExecutionResultDbContext : DbContext
+public sealed class RunnerDbContext : DbContext
 {
     /// <summary>
     /// Execution Results.
     /// </summary>
-    public DbSet<ExecutionResult> ExecutionResults { get; set; } = default!;
+    public DbSet<Runner> Runners { get; set; } = default!;
 
     private readonly string dbPath;
 
     /// <inheritdoc/>
-    public ExecutionResultDbContext()
+    public RunnerDbContext()
     {
         var path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "InglemoorCodingComputing.Evaluator");
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-        dbPath = Path.Join(path, "executionresults.db");
+        dbPath = Path.Join(path, "runners.db");
     }
 
     /// <summary>

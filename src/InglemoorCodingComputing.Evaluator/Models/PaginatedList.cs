@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 /// Paginated List
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class PaginatedList<T> : IReadOnlyList<T>
+public sealed class PaginatedList<T> : IReadOnlyList<T>
 {
     private readonly IReadOnlyList<T> backing;
     /// <summary>

@@ -11,7 +11,7 @@ services:
     volumes:
       - ./data/ihs-ccc-eval:/data
     environment:
-      - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
+      - ExecutionEndpoint=http://exec-runner:80,1234
       - JWT__Secret=${JWT_Secret}
       - Admin__Password=${Admin_Password}
       - XDG_DATA_HOME=/data
