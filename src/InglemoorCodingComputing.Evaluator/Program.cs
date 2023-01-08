@@ -6,7 +6,7 @@ using System.Text;
 using System.Security.Claims;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +18,11 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IAsyncCodeExecutionService, RemoteCodeExecutionService>();
 builder.Services.AddSingleton<IUserLimitService, UserLimitService>();
 builder.Services.AddSingleton<IResultCheckingService, ResultCheckingService>();
+builder.Services.AddScoped<IExecutionLoggingService, ExecutionLoggingService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<AuthenticationStateService>();
 builder.Services.AddDbContext<ApiUserDbContext>();
+builder.Services.AddDbContext<ExecutionResultDbContext>();
 builder.Services.AddHttpClient<IAsyncCodeExecutionService, RemoteCodeExecutionService>();
 
 
@@ -81,13 +83,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
+builder.Services.AddQuartz(q =>
+{
+    JobKey jobKey = new("PruneExecutionResultsJob");
+    q.AddJob<PruneExecutionResultsJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey).WithSimpleSchedule(a => a.WithIntervalInHours(1).RepeatForever())
+        .WithIdentity("PruneExecutionResults-trigger")
+
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
 using (var serviceScope = app.Services.CreateScope())
 {
-    var context = serviceScope.ServiceProvider.GetRequiredService<ApiUserDbContext>();
-    context.Database.Migrate();
+    serviceScope.ServiceProvider.GetRequiredService<ApiUserDbContext>().Database.Migrate();
+    serviceScope.ServiceProvider.GetRequiredService<ExecutionResultDbContext>().Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

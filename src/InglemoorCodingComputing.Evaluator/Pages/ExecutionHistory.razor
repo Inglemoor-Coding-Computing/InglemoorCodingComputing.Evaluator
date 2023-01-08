@@ -1,0 +1,77 @@
+@inject AuthenticationStateService AuthenticationStateService
+@inject IExecutionLoggingService ExecutionLoggingService
+@inject NavigationManager NavigationManager
+@using System.Threading
+@if (results is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="flex flex-col items-center">
+        <h3 class="py-4 text-3xl font-semibold">Execution Log</h3>
+
+        <div class="space-y-4">
+            @foreach (var result in results)
+            {
+                <div class="p-2 bg-gray-100 dark:bg-gray-800 rounded-xl w-96">
+                    <div>@result.Time
+                        @if (result.Errored)
+                        {
+                            <span class="font-bold text-rose-500">FAILED</span>
+                        }
+                    </div>
+                    <div>Execution Id: @result.Id</div>
+                    <div>Application: @result.Application</div>
+                    <div>App User: @result.User</div>
+                    <div>@result.ErrorMessage</div>
+                </div>
+            }
+            <div class="flex justify-between">
+                <div class="flex space-x-3">
+                    <button class="px-2 py-1 @(results.HasPreviousPage ? "bg-teal-500" : "bg-gray-500") rounded-lg"
+                    @onclick=PreviousAsync disabled=@(!results.HasPreviousPage)>Previous</button>
+                    <button class="px-2 py-1 @(results.HasNextPage ? "bg-teal-500" : "bg-gray-500")  rounded-lg"
+                    @onclick=NextAsync disabled=@(!results.HasNextPage)>Next</button>
+
+                </div>
+                <p>page @pageNumber of @results.TotalPages</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    int pageNumber = 1;
+    int pageSize = 15;
+    PaginatedList<ExecutionResult>? results;
+
+    private async Task PreviousAsync()
+    {
+        pageNumber--;
+        await LoadAsync();
+    }
+
+    private async Task NextAsync()
+    {
+        pageNumber++;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        results = await ExecutionLoggingService.GetExecutionsAsync(pageNumber, pageSize);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadAsync();
+            using PeriodicTimer timer = new(TimeSpan.FromMinutes(1));
+            while (await timer.WaitForNextTickAsync())
+                await LoadAsync();
+        }
+    }
+}

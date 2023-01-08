@@ -1,14 +1,16 @@
 @inherits LayoutComponentBase
 
-<div class="flex flex-col h-screen justify-between p-2">
-    <header class="h-10 flex space-x-3">
-        <div class="font-extrabold text-2xl font-mono">
+<div class="flex flex-col justify-between h-screen p-2">
+    <header class="flex h-10 space-x-3">
+        <a href="/admin" class="font-mono text-2xl font-extrabold ">
             IHS-CCC:Evaluator Administrator Dashboard
-        </div>
+        </a>
     </header>
 
     <main class="flex-grow">
-        @Body
+        <div class="flex flex-col px-3 pt-5">
+            @Body
+        </div>
     </main>
 
     <footer class="flex flex-col justify-center">
