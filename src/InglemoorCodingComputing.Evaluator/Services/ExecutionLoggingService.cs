@@ -51,5 +51,5 @@ public sealed class ExecutionLoggingService : IExecutionLoggingService
 
     /// <inheritdoc />
     public Task<PaginatedList<ExecutionResult>> GetExecutionsAsync(int page, int size) =>
-        PaginatedList<ExecutionResult>.CreateAsync(_context.ExecutionResults.AsNoTracking().OrderBy(x => x.Time), page, size);
+        PaginatedList<ExecutionResult>.CreateAsync(_context.ExecutionResults.AsNoTracking().OrderByDescending(x => x.Time), page, size);
 }

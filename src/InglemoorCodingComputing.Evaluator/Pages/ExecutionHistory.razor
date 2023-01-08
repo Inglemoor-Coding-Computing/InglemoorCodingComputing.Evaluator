@@ -69,7 +69,7 @@ else
         if (firstRender)
         {
             await LoadAsync();
-            using PeriodicTimer timer = new(TimeSpan.FromMinutes(1));
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(10));
             while (await timer.WaitForNextTickAsync())
                 await LoadAsync();
         }

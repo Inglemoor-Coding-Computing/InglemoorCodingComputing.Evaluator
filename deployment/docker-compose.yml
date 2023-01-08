@@ -7,11 +7,12 @@ services:
       - 1313:80
     restart: always
     volumes:
-      - ihs-ccc-eval:/InglemoorCodingComputing.Evaluator/
+      - ./data/ihs-ccc-eval:/data
     environment:
       - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
       - JWT__Secret=${JWT_Secret}
       - Admin__Password=${Admin_Password}
+      - XDG_DATA_HOME=/data
 
   exec-runner:
     image: ghcr.io/inglemoor-coding-computing/ihs-ccc-evaluator-runner:main
@@ -41,5 +42,3 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 60
     restart: always
-volumes:
-  ihs-ccc-eval:

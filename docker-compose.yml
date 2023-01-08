@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   evaluator-dev:
-    build: 
+    build:
       context: .
       dockerfile: ./src/InglemoorCodingComputing.Evaluator/Dockerfile
     container_name: ihs-ccc-eval-dev
@@ -9,14 +9,15 @@ services:
       - 1313:80
     restart: always
     volumes:
-      - ihs-ccc-eval:/InglemoorCodingComputing.Evaluator
+      - ./data/ihs-ccc-eval:/data
     environment:
       - ExecutionEndpoint=http://exec-runner:80/execute?key=1234
       - JWT__Secret=${JWT_Secret}
       - Admin__Password=${Admin_Password}
+      - XDG_DATA_HOME=/data
 
   exec-runner:
-    build: 
+    build:
       context: .
       dockerfile: ./src/InglemoorCodingComputing.Evaluator.ExecutionRunner/Dockerfile
     container_name: ihs-ccc-eval-exec-runner-dev
