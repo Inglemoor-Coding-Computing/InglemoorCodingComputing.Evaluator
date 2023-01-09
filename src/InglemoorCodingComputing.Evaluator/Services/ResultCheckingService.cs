@@ -28,6 +28,8 @@ public class ResultCheckingService : IResultCheckingService
     /// <inheritdoc/>
     public bool Verify(string expected, string generated)
     {
+        if (expected == generated)
+            return true;
         var x = Clean(expected);
         var y = Clean(generated);
         return x == y;
